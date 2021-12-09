@@ -1,0 +1,35 @@
+name: terraform ci
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12.641.0
+        with:
+#          quiet: true # optional: display only failed checks
+#          soft_fail: true # optional: do not return an error code if there are failed checks
+          framework: terraform # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
+#          output_format: json # optional: the output format, one of: cli, json, junitxml, github_failed_only
+#          download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
+#          log_level: DEBUG # optional: set log level. Default WARNING
+#          config_file: path/this_file
+#          baseline: cloudformation/.checkov.baseline # optional: Path to a generated baseline file. Will only report results not in the baseline.
+#          container_user: 1000 # optional: Define what UID and / or what GID to run the container under to prevent permission issues
